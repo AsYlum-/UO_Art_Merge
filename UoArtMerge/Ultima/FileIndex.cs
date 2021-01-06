@@ -118,7 +118,7 @@ namespace UoArtMerge.Ultima
                 return false;
             }
 
-            if ((Stream == null) || (!Stream.CanRead) || (!Stream.CanSeek))
+            if (Stream?.CanRead != true || !Stream.CanSeek)
             {
                 Stream = new FileStream(_mulPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             }
@@ -135,7 +135,7 @@ namespace UoArtMerge.Ultima
             return true;
         }
 
-        public FileIndex(string idxFileIncludingPath, string mulFileIncludingPath, int file)
+        public FileIndex(string idxFileIncludingPath, string mulFileIncludingPath)
         {
             if ((idxFileIncludingPath != null) && (mulFileIncludingPath != null))
             {
