@@ -56,29 +56,29 @@ namespace UOArtMerge
             return bitmapImage;
         }
 
-/*
-        static bool ArraysEqual<T>(T[] a1, T[] a2)
-        {
-            if (ReferenceEquals(a1, a2))
-            {
-                return true;
-            }
+        /*
+                static bool ArraysEqual<T>(T[] a1, T[] a2)
+                {
+                    if (ReferenceEquals(a1, a2))
+                    {
+                        return true;
+                    }
 
-            if (a1 == null || a2 == null)
-            {
-                return false;
-            }
+                    if (a1 == null || a2 == null)
+                    {
+                        return false;
+                    }
 
-            if (a1.Length != a2.Length)
-            {
-                return false;
-            }
+                    if (a1.Length != a2.Length)
+                    {
+                        return false;
+                    }
 
-            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
+                    EqualityComparer<T> comparer = EqualityComparer<T>.Default;
 
-            return !a1.Where((t, i) => !comparer.Equals(t, a2[i])).Any();
-        }
-*/
+                    return !a1.Where((t, i) => !comparer.Equals(t, a2[i])).Any();
+                }
+        */
 
         public void Save()
         {
@@ -218,7 +218,6 @@ namespace UOArtMerge
                 OnPropertyChanged("TileData");
             }
         }
-
 
         private LandData? _landDatum;
         public LandData? LandDatum

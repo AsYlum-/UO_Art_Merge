@@ -21,18 +21,20 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace UoArtMerge.Ultima
 {
     public class Art
     {
-        private FileIndex m_FileIndex;
-        private Bitmap[] m_Cache;
-        private bool[] m_Removed;
-        public bool Modified = false;
-        private byte[] Validbuffer;
-        private byte[] m_StreamBuffer;
+        private readonly FileIndex _fileIndex;
+        private readonly Bitmap[] _cache;
+        private readonly bool[] _removed;
+        private byte[] _validBuffer;
+        private byte[] _streamBuffer;
+
+        public bool Modified;
 
         struct CheckSums
         {
@@ -41,49 +43,60 @@ namespace UoArtMerge.Ultima
             public int length;
             public int index;
         }
-        private List<CheckSums> checksumsLand;
-        private List<CheckSums> checksumsStatic;
+        private List<CheckSums> _checksumsLand;
+        private List<CheckSums> _checksumsStatic;
 
         public Art(string mulPath, string idxPath)
         {
-            m_FileIndex = new FileIndex(idxPath, mulPath, 4);
-            m_Cache = new Bitmap[GetIdxLength()];
-            m_Removed = new bool[GetIdxLength()];
+            _fileIndex = new FileIndex(idxPath, mulPath, 4);
+            _cache = new Bitmap[GetIdxLength()];
+            _removed = new bool[GetIdxLength()];
         }
 
         public bool IsUOAHS()
         {
-            return (GetIdxLength() == 0x13FDC);
+            return GetIdxLength() == 0x13FDC;
         }
 
         public int GetMaxItemID()
         {
             if (GetIdxLength() == 0xC000)
+            {
                 return 0x7FFF;
+            }
 
             if (GetIdxLength() == 0x13FDC)
+            {
                 return 0xFFDB;
+            }
 
             return 0x3FFF;
         }
 
         public int GetIdxLength()
         {
-            return (int)(m_FileIndex.IdxLength / 12);
+            return (int)(_fileIndex.IdxLength / 12);
         }
 
-        public ushort GetLegalItemID(int itemID, bool checkmaxid = true)
+        public ushort GetLegalItemID(int itemId, bool checkMaxId = true)
         {
-            if (itemID < 0)
-                return 0;
-
-            if (checkmaxid)
+            if (itemId < 0)
             {
-                int max = GetMaxItemID();
-                if (itemID > max)
-                    return 0;
+                return 0;
             }
-            return (ushort)itemID;
+
+            if (!checkMaxId)
+            {
+                return (ushort)itemId;
+            }
+
+            int max = GetMaxItemID();
+            if (itemId > max)
+            {
+                return 0;
+            }
+
+            return (ushort)itemId;
         }
 
         public void ReplaceStatic(int index, Bitmap bmp)
@@ -91,16 +104,16 @@ namespace UoArtMerge.Ultima
             index = GetLegalItemID(index);
             index += 0x4000;
 
-            m_Cache[index] = bmp;
-            m_Removed[index] = false;
+            _cache[index] = bmp;
+            _removed[index] = false;
             Modified = true;
         }
 
         public void ReplaceLand(int index, Bitmap bmp)
         {
             index &= 0x3FFF;
-            m_Cache[index] = bmp;
-            m_Removed[index] = false;
+            _cache[index] = bmp;
+            _removed[index] = false;
             Modified = true;
         }
 
@@ -109,14 +122,14 @@ namespace UoArtMerge.Ultima
             index = GetLegalItemID(index);
             index += 0x4000;
 
-            m_Removed[index] = true;
+            _removed[index] = true;
             Modified = true;
         }
 
         public void RemoveLand(int index)
         {
             index &= 0x3FFF;
-            m_Removed[index] = true;
+            _removed[index] = true;
             Modified = true;
         }
 
@@ -125,26 +138,38 @@ namespace UoArtMerge.Ultima
             index = GetLegalItemID(index);
             index += 0x4000;
 
-            if (m_Removed[index])
+            if (_removed[index])
+            {
                 return false;
-            if (m_Cache[index] != null)
-                return true;
+            }
 
-            int length, extra;
-            Stream stream = m_FileIndex.Seek(index, out length, out extra);
+            if (_cache[index] != null)
+            {
+                return true;
+            }
+
+            Stream stream = _fileIndex.Seek(index, out int _, out int _);
 
             if (stream == null)
+            {
                 return false;
+            }
 
-            if (Validbuffer == null)
-                Validbuffer = new byte[4];
+            if (_validBuffer == null)
+            {
+                _validBuffer = new byte[4];
+            }
+
             stream.Seek(4, SeekOrigin.Current);
-            stream.Read(Validbuffer, 0, 4);
-            fixed (byte* b = Validbuffer)
+            stream.Read(_validBuffer, 0, 4);
+            fixed (byte* b = _validBuffer)
             {
                 short* dat = (short*)b;
                 if (*dat++ <= 0 || *dat <= 0)
+                {
                     return false;
+                }
+
                 return true;
             }
         }
@@ -152,43 +177,46 @@ namespace UoArtMerge.Ultima
         public bool IsValidLand(int index)
         {
             index &= 0x3FFF;
-            if (m_Removed[index])
+            if (_removed[index])
+            {
                 return false;
-            if (m_Cache[index] != null)
-                return true;
+            }
 
-            int length, extra;
-            bool patched;
-
-            return m_FileIndex.Valid(index, out length, out extra, out patched);
+            return _cache[index] != null || _fileIndex.Valid(index, out int _, out int _, out bool _);
         }
 
         public Bitmap GetLand(int index)
         {
             index &= 0x3FFF;
 
-            if (m_Removed[index])
+            if (_removed[index])
+            {
                 return null;
-            if (m_Cache[index] != null)
-                return m_Cache[index];
+            }
 
-            int length, extra;
-            Stream stream = m_FileIndex.Seek(index, out length, out extra);
+            if (_cache[index] != null)
+            {
+                return _cache[index];
+            }
+
+            Stream stream = _fileIndex.Seek(index, out int length, out int _);
             if (stream == null)
+            {
                 return null;
+            }
 
-            return m_Cache[index] = LoadLand(stream, length);
+            return _cache[index] = LoadLand(stream, length);
         }
 
         private unsafe Bitmap LoadLand(Stream stream, int length)
         {
             Bitmap bmp = new Bitmap(44, 44, PixelFormat.Format16bppArgb1555);
             BitmapData bd = bmp.LockBits(new Rectangle(0, 0, 44, 44), ImageLockMode.WriteOnly, PixelFormat.Format16bppArgb1555);
-            if (m_StreamBuffer == null || m_StreamBuffer.Length < length)
-                m_StreamBuffer = new byte[length];
-            stream.Read(m_StreamBuffer, 0, length);
+            if (_streamBuffer == null || _streamBuffer.Length < length)
+                _streamBuffer = new byte[length];
+            stream.Read(_streamBuffer, 0, length);
             stream.Close();
-            fixed (byte* bindata = m_StreamBuffer)
+            fixed (byte* bindata = _streamBuffer)
             {
                 ushort* bdata = (ushort*)bindata;
                 int xOffset = 21;
@@ -227,7 +255,7 @@ namespace UoArtMerge.Ultima
             index &= 0x3FFF;
 
             int length, extra;
-            Stream stream = m_FileIndex.Seek(index, out length, out extra);
+            Stream stream = _fileIndex.Seek(index, out length, out extra);
             if (stream == null)
                 return null;
             byte[] buffer = new byte[length];
@@ -242,28 +270,28 @@ namespace UoArtMerge.Ultima
             index += 0x4000;
 
 
-            if (m_Removed[index])
+            if (_removed[index])
                 return null;
-            if (m_Cache[index] != null)
-                return m_Cache[index];
+            if (_cache[index] != null)
+                return _cache[index];
 
             int length, extra;
-            Stream stream = m_FileIndex.Seek(index, out length, out extra);
+            Stream stream = _fileIndex.Seek(index, out length, out extra);
             if (stream == null)
                 return null;
 
-            return m_Cache[index] = LoadStatic(stream, length);
+            return _cache[index] = LoadStatic(stream, length);
         }
 
         private unsafe Bitmap LoadStatic(Stream stream, int length)
         {
             Bitmap bmp;
-            if (m_StreamBuffer == null || m_StreamBuffer.Length < length)
-                m_StreamBuffer = new byte[length];
-            stream.Read(m_StreamBuffer, 0, length);
+            if (_streamBuffer == null || _streamBuffer.Length < length)
+                _streamBuffer = new byte[length];
+            stream.Read(_streamBuffer, 0, length);
             stream.Close();
 
-            fixed (byte* data = m_StreamBuffer)
+            fixed (byte* data = _streamBuffer)
             {
                 ushort* bindata = (ushort*)data;
                 int count = 2;
@@ -276,10 +304,10 @@ namespace UoArtMerge.Ultima
 
                 int[] lookups = new int[height];
 
-                int start = (height + 4);
+                int start = height + 4;
 
                 for (int i = 0; i < height; ++i)
-                    lookups[i] = (int)(start + (bindata[count++]));
+                    lookups[i] = (int)(start + bindata[count++]);
 
                 bmp = new Bitmap(width, height, PixelFormat.Format16bppArgb1555);
                 BitmapData bd = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format16bppArgb1555);
@@ -297,7 +325,7 @@ namespace UoArtMerge.Ultima
                     ushort* end;
                     int xOffset, xRun;
 
-                    while (((xOffset = bindata[count++]) + (xRun = bindata[count++])) != 0)
+                    while ((xOffset = bindata[count++]) + (xRun = bindata[count++]) != 0)
                     {
                         if (xOffset > delta)
                             break;
@@ -321,7 +349,7 @@ namespace UoArtMerge.Ultima
             index += 0x4000;
 
             int length, extra;
-            Stream stream = m_FileIndex.Seek(index, out length, out extra);
+            Stream stream = _fileIndex.Seek(index, out length, out extra);
             if (stream == null)
                 return null;
             byte[] buffer = new byte[length];
@@ -345,7 +373,7 @@ namespace UoArtMerge.Ultima
 
             ushort* pBuffer = (ushort*)bd.Scan0;
             ushort* pLineEnd = pBuffer + bd.Width;
-            ushort* pEnd = pBuffer + (bd.Height * lineDelta);
+            ushort* pEnd = pBuffer + bd.Height * lineDelta;
 
             bool foundPixel = false;
 
@@ -394,8 +422,8 @@ namespace UoArtMerge.Ultima
 
         public unsafe void Save(string path)
         {
-            checksumsLand = new List<CheckSums>();
-            checksumsStatic = new List<CheckSums>();
+            _checksumsLand = new List<CheckSums>();
+            _checksumsStatic = new List<CheckSums>();
             string idx = Path.Combine(path, "artidx_.mul");
             string mul = Path.Combine(path, "art_.mul");
             using (FileStream fsidx = new FileStream(idx, FileMode.Create, FileAccess.Write, FileShare.Write),
@@ -411,15 +439,15 @@ namespace UoArtMerge.Ultima
                 {
                     for (int index = 0; index < GetIdxLength(); index++)
                     {
-                        if (m_Cache[index] == null)
+                        if (_cache[index] == null)
                         {
                             if (index < 0x4000)
-                                m_Cache[index] = GetLand(index);
+                                _cache[index] = GetLand(index);
                             else
-                                m_Cache[index] = GetStatic(index - 0x4000, false);
+                                _cache[index] = GetStatic(index - 0x4000, false);
                         }
-                        Bitmap bmp = m_Cache[index];
-                        if ((bmp == null) || (m_Removed[index]))
+                        Bitmap bmp = _cache[index];
+                        if (bmp == null || _removed[index])
                         {
                             binidx.Write((int)-1); // lookup
                             binidx.Write((int)0); // length
@@ -475,7 +503,7 @@ namespace UoArtMerge.Ultima
                             bmp.UnlockBits(bd);
                             CheckSums s = new CheckSums() { pos = start, length = length, checksum = checksum, index = index };
                             //Tex.WriteLine(System.String.Format("0x{0:X4} : 0x{1:X4} 0x{2:X4}", index, start, length));
-                            checksumsLand.Add(s);
+                            _checksumsLand.Add(s);
                         }
                         else
                         {
@@ -483,7 +511,7 @@ namespace UoArtMerge.Ultima
                             bmp.Save(ms, ImageFormat.Bmp);
                             byte[] checksum = sha.ComputeHash(ms.ToArray());
                             CheckSums sum;
-                            if (compareSaveImagesStatic(checksum, out sum))
+                            if (CompareSaveImagesStatic(checksum, out sum))
                             {
                                 binidx.Write((int)sum.pos); //lookup
                                 binidx.Write((int)sum.length);
@@ -532,7 +560,7 @@ namespace UoArtMerge.Ultima
                                     }
                                     if (i < bmp.Width)
                                     {
-                                        for (j = (i + 1); j < bmp.Width; ++j)
+                                        for (j = i + 1; j < bmp.Width; ++j)
                                         {
                                             //next non set pixel
                                             if (cur[j] == 0)
@@ -555,7 +583,7 @@ namespace UoArtMerge.Ultima
                             bmp.UnlockBits(bd);
                             CheckSums s = new CheckSums() { pos = start, length = length, checksum = checksum, index = index };
                             //Tex.WriteLine(System.String.Format("0x{0:X4} : 0x{1:X4} 0x{2:X4}", index, start, length));
-                            checksumsStatic.Add(s);
+                            _checksumsStatic.Add(s);
                         }
                     }
                     memidx.WriteTo(fsidx);
@@ -564,61 +592,53 @@ namespace UoArtMerge.Ultima
             }
         }
 
-        private bool compareSaveImagesLand(byte[] newchecksum, out CheckSums sum)
+        private bool compareSaveImagesLand(byte[] newChecksum, out CheckSums sum)
         {
             sum = new CheckSums();
-            for (int i = 0; i < checksumsLand.Count; ++i)
+            for (int i = 0; i < _checksumsLand.Count; ++i)
             {
-                byte[] cmp = checksumsLand[i].checksum;
-                if (((cmp == null) || (newchecksum == null))
-                    || (cmp.Length != newchecksum.Length))
+                byte[] cmp = _checksumsLand[i].checksum;
+                if (cmp == null || newChecksum == null || cmp.Length != newChecksum.Length)
                 {
                     return false;
                 }
-                bool valid = true;
-                for (int j = 0; j < cmp.Length; ++j)
+
+                bool valid = !cmp.Where((t, j) => t != newChecksum[j]).Any();
+
+                if (!valid)
                 {
-                    if (cmp[j] != newchecksum[j])
-                    {
-                        valid = false;
-                        break;
-                    }
+                    continue;
                 }
-                if (valid)
-                {
-                    sum = checksumsLand[i];
-                    return true;
-                }
+
+                sum = _checksumsLand[i];
+                return true;
             }
+
             return false;
         }
 
-        private bool compareSaveImagesStatic(byte[] newchecksum, out CheckSums sum)
+        private bool CompareSaveImagesStatic(byte[] newChecksum, out CheckSums sum)
         {
             sum = new CheckSums();
-            for (int i = 0; i < checksumsStatic.Count; ++i)
+            for (int i = 0; i < _checksumsStatic.Count; ++i)
             {
-                byte[] cmp = checksumsStatic[i].checksum;
-                if (((cmp == null) || (newchecksum == null))
-                    || (cmp.Length != newchecksum.Length))
+                byte[] cmp = _checksumsStatic[i].checksum;
+                if (cmp == null || newChecksum == null || cmp.Length != newChecksum.Length)
                 {
                     return false;
                 }
-                bool valid = true;
-                for (int j = 0; j < cmp.Length; ++j)
+
+                bool valid = !cmp.Where((t, j) => t != newChecksum[j]).Any();
+
+                if (!valid)
                 {
-                    if (cmp[j] != newchecksum[j])
-                    {
-                        valid = false;
-                        break;
-                    }
+                    continue;
                 }
-                if (valid)
-                {
-                    sum = checksumsStatic[i];
-                    return true;
-                }
+
+                sum = _checksumsStatic[i];
+                return true;
             }
+
             return false;
         }
     }

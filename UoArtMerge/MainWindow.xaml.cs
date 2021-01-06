@@ -129,10 +129,9 @@ namespace UOArtMerge
                 return;
             }
 
-            ScrollViewer listboxScrollViewer1 = GetDescendantByType(ArtList1, typeof(ScrollViewer)) as ScrollViewer;
             ScrollViewer listboxScrollViewer2 = GetDescendantByType(ArtList2, typeof(ScrollViewer)) as ScrollViewer;
 
-            if (listboxScrollViewer1 != null)
+            if (GetDescendantByType(ArtList1, typeof(ScrollViewer)) is ScrollViewer listboxScrollViewer1)
             {
                 listboxScrollViewer2?.ScrollToVerticalOffset(listboxScrollViewer1.VerticalOffset);
             }
@@ -160,10 +159,9 @@ namespace UOArtMerge
                 return;
             }
 
-            ScrollViewer listboxScrollViewer1 = GetDescendantByType(LandList1, typeof(ScrollViewer)) as ScrollViewer;
             ScrollViewer listboxScrollViewer2 = GetDescendantByType(LandList2, typeof(ScrollViewer)) as ScrollViewer;
 
-            if (listboxScrollViewer1 != null)
+            if (GetDescendantByType(LandList1, typeof(ScrollViewer)) is ScrollViewer listboxScrollViewer1)
             {
                 listboxScrollViewer2?.ScrollToVerticalOffset(listboxScrollViewer1.VerticalOffset);
             }
@@ -201,11 +199,11 @@ namespace UOArtMerge
 
             if (_linked)
             {
-                LinkedButtonpath.Style = Resources["LinkedIcon"] as Style;
+                LinkedButtonPath.Style = Resources["LinkedIcon"] as Style;
             }
             else
             {
-                LinkedButtonpath.Style = Resources["UnlinkedIcon"] as Style;
+                LinkedButtonPath.Style = Resources["UnlinkedIcon"] as Style;
             }
 
             NotifyPropertyChanged("LinkedButtonText");
