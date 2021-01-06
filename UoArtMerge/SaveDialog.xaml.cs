@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Threading;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-
-using System.Runtime.InteropServices;
+using System.Windows;
 using System.Windows.Interop;
-
-using System.ComponentModel;
+using System.Windows.Threading;
 
 namespace UOArtMerge
 {
     /// <summary>
     /// Interaction logic for SaveDialog.xaml
     /// </summary>
-    public partial class SaveDialog : Window
+    public partial class SaveDialog
     {
         private readonly int _set;
         private readonly MainWindow _window;
@@ -30,7 +28,7 @@ namespace UOArtMerge
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var handle = new WindowInteropHelper(this).Handle;
-            SetWindowLong(handle, GWL_STYLE, GetWindowLong(handle, GWL_STYLE) & ~WS_SYSMENU);
+            SetWindowLong(handle, _gwlStyle, GetWindowLong(handle, _gwlStyle) & ~_wsSysMenu);
 
             Task.Factory.StartNew(() =>
             {
@@ -43,13 +41,14 @@ namespace UOArtMerge
             });
         }
 
-        private const int GWL_STYLE = -16;
-        private const int WS_SYSMENU = 0x80000;
+        private const int _gwlStyle = -16;
+        private const int _wsSysMenu = 0x80000;
+
         [DllImport("user32.dll", SetLastError = true)]
         private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
         [DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
 
         protected override void OnClosing(CancelEventArgs e)
         {

@@ -197,7 +197,8 @@ namespace UoArtMerge.Ultima
     {
         internal TileData _tileData;
 
-        public ItemData(string name, TileData data, TileFlag flags, int unk1, int weight, int quality, int quantity, int value, int height, int anim, int hue, int stackingoffset, int MiscData, int unk2, int unk3)
+/*
+        public ItemData(string name, TileData data, TileFlag flags, int unk1, int weight, int quality, int quantity, int value, int height, int anim, int hue, int stackingOffset, int miscData, int unk2, int unk3)
         {
             Name = name;
             Flags = flags;
@@ -209,12 +210,13 @@ namespace UoArtMerge.Ultima
             Height = (byte)height;
             Animation = (short)anim;
             Hue = (byte)hue;
-            StackingOffset = (byte)stackingoffset;
-            this.MiscData = (short)MiscData;
+            StackingOffset = (byte)stackingOffset;
+            MiscData = (short)miscData;
             Unk2 = (byte)unk2;
             Unk3 = (byte)unk3;
             _tileData = data;
         }
+*/
 
         public unsafe ItemData(NewItemTileDataMul mulStruct, TileData data)
         {
@@ -650,7 +652,7 @@ namespace UoArtMerge.Ultima
     /// </summary>
     public sealed class TileData
     {
-        private readonly Art m_art;
+        private readonly Art _art;
 
         /// <summary>
         /// Gets the list of <see cref="LandData">land tile data</see>.
@@ -684,14 +686,16 @@ namespace UoArtMerge.Ultima
         {
             int count;
             for (count = 0; count < 20 && *buffer != 0; ++count)
+            {
                 _stringBuffer[count] = *buffer++;
+            }
 
             return Encoding.Default.GetString(_stringBuffer, 0, count);
         }
 
         public TileData(Art art)
         {
-            m_art = art;
+            _art = art;
         }
 
         private int[] _landHeader;
@@ -706,7 +710,7 @@ namespace UoArtMerge.Ultima
 
             using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                bool useNeWTileDataFormat = m_art.IsUOAHS();
+                bool useNeWTileDataFormat = _art.IsUOAHS();
                 _landHeader = new int[512];
                 int j = 0;
                 LandTable = new LandData[0x4000];
@@ -791,75 +795,75 @@ namespace UoArtMerge.Ultima
             string fileName = Path.Combine(path, "TileData_.mul");
 
             using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Write))
+            using (BinaryWriter bin = new BinaryWriter(fs))
             {
-                using (BinaryWriter bin = new BinaryWriter(fs))
+                int j = 0;
+                bool useNewTileDataFormat = _art.IsUOAHS();
+                for (int i = 0; i < 0x4000; ++i)
                 {
-                    int j = 0;
-                    bool useNewTileDataFormat = m_art.IsUOAHS();
-                    for (int i = 0; i < 0x4000; ++i)
+                    if ((i & 0x1F) == 0)
                     {
-                        if ((i & 0x1F) == 0)
-                        {
-                            bin.Write(_landHeader[j++]); //header
-                        }
-
-                        bin.Write((int)LandTable[i].Flags);
-                        if (useNewTileDataFormat)
-                        {
-                            bin.Write(LandTable[i].Unk1);
-                        }
-
-                        bin.Write(LandTable[i].TextureID);
-                        byte[] b = new byte[20];
-                        if (LandTable[i].Name != null)
-                        {
-                            byte[] bb = Encoding.Default.GetBytes(LandTable[i].Name);
-                            if (bb.Length > 20)
-                                Array.Resize(ref bb, 20);
-                            bb.CopyTo(b, 0);
-                        }
-                        bin.Write(b);
+                        bin.Write(_landHeader[j++]); //header
                     }
 
-                    j = 0;
-                    for (int i = 0; i < ItemTable.Length; ++i)
+                    bin.Write((int)LandTable[i].Flags);
+                    if (useNewTileDataFormat)
                     {
-                        if ((i & 0x1F) == 0)
-                        {
-                            bin.Write(_itemHeader[j++]); // header
-                        }
-
-                        bin.Write((int)ItemTable[i].Flags);
-                        if (useNewTileDataFormat)
-                        {
-                            bin.Write(ItemTable[i].Unk1);
-                        }
-
-                        bin.Write(ItemTable[i].Weight);
-                        bin.Write(ItemTable[i].Quality);
-                        bin.Write(ItemTable[i].MiscData);
-                        bin.Write(ItemTable[i].Unk2);
-                        bin.Write(ItemTable[i].Quantity);
-                        bin.Write(ItemTable[i].Animation);
-                        bin.Write(ItemTable[i].Unk3);
-                        bin.Write(ItemTable[i].Hue);
-                        bin.Write(ItemTable[i].StackingOffset); //unk4
-                        bin.Write(ItemTable[i].Value); //unk5
-                        bin.Write(ItemTable[i].Height);
-
-                        byte[] b = new byte[20];
-                        if (ItemTable[i].Name != null)
-                        {
-                            byte[] bb = Encoding.Default.GetBytes(ItemTable[i].Name);
-                            if (bb.Length > 20)
-                            {
-                                Array.Resize(ref bb, 20);
-                            }
-
-                            bb.CopyTo(b, 0);
-                        }
-                        bin.Write(b);
+                        bin.Write(LandTable[i].Unk1);
                     }
+
+                    bin.Write(LandTable[i].TextureID);
+                    byte[] b = new byte[20];
+                    if (LandTable[i].Name != null)
+                    {
+                        byte[] bb = Encoding.Default.GetBytes(LandTable[i].Name);
+                        if (bb.Length > 20)
+                            Array.Resize(ref bb, 20);
+                        bb.CopyTo(b, 0);
+                    }
+
+                    bin.Write(b);
+                }
+
+                j = 0;
+                for (int i = 0; i < ItemTable.Length; ++i)
+                {
+                    if ((i & 0x1F) == 0)
+                    {
+                        bin.Write(_itemHeader[j++]); // header
+                    }
+
+                    bin.Write((int)ItemTable[i].Flags);
+                    if (useNewTileDataFormat)
+                    {
+                        bin.Write(ItemTable[i].Unk1);
+                    }
+
+                    bin.Write(ItemTable[i].Weight);
+                    bin.Write(ItemTable[i].Quality);
+                    bin.Write(ItemTable[i].MiscData);
+                    bin.Write(ItemTable[i].Unk2);
+                    bin.Write(ItemTable[i].Quantity);
+                    bin.Write(ItemTable[i].Animation);
+                    bin.Write(ItemTable[i].Unk3);
+                    bin.Write(ItemTable[i].Hue);
+                    bin.Write(ItemTable[i].StackingOffset); //unk4
+                    bin.Write(ItemTable[i].Value); //unk5
+                    bin.Write(ItemTable[i].Height);
+
+                    byte[] b = new byte[20];
+                    if (ItemTable[i].Name != null)
+                    {
+                        byte[] bb = Encoding.Default.GetBytes(ItemTable[i].Name);
+                        if (bb.Length > 20)
+                        {
+                            Array.Resize(ref bb, 20);
+                        }
+
+                        bb.CopyTo(b, 0);
+                    }
+
+                    bin.Write(b);
                 }
             }
         }
@@ -1141,5 +1145,4 @@ namespace UoArtMerge.Ultima
         public byte height;
         public fixed byte name[20];
     }
-
 }

@@ -13,13 +13,11 @@
  You should have received a copy of the GNU General Public License
  along with UltimaLive.  If not, see <http://www.gnu.org/licenses/>.     
 -->
-    <Window x:Class="UOArtMerge.MainWindow"
+<Window x:Class="UOArtMerge.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:merge="clr-namespace:UOArtMerge"
         xmlns:converters="clr-namespace:UoArtMerge.Converters"
-        Title="UO Art Merge" Height="673" Width="993" Name="This" ResizeMode="NoResize"
-        Background="AntiqueWhite" 
+        Title="UO Art Merge" Height="673" Width="993" Name="This" WindowStartupLocation="CenterScreen" 
         >
 
     <Window.Resources>
@@ -207,7 +205,7 @@
                           x:Name="ArtList1" 
                           ScrollViewer.ScrollChanged="ArtSet1_ScrollChanged"
                           Height="580"  
-                          Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" ItemsSource="{Binding ElementName=This, Path=ArtSet1.Items}" ScrollViewer.CanContentScroll="True">
+                          HorizontalAlignment="Stretch" ItemsSource="{Binding ElementName=This, Path=ArtSet1.Items}" ScrollViewer.CanContentScroll="True">
 
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -228,7 +226,7 @@
                           x:Name="LandList1" 
                           ScrollViewer.ScrollChanged="LandSet1_ScrollChanged"
                           Height="580"  
-                          Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" ItemsSource="{Binding ElementName=This, Path=ArtSet1.Land}" ScrollViewer.CanContentScroll="True">
+                          HorizontalAlignment="Stretch" ItemsSource="{Binding ElementName=This, Path=ArtSet1.Land}" ScrollViewer.CanContentScroll="True">
 
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -243,8 +241,6 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-
-
             </StackPanel>
         </Border>
 
@@ -352,7 +348,7 @@
                           x:Name="ArtList2" 
                           ScrollViewer.ScrollChanged="ArtSet2_ScrollChanged"
                           Height="580"  
-                          Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" ItemsSource="{Binding ElementName=This, Path=ArtSet2.Items}" ScrollViewer.CanContentScroll="True">
+                          HorizontalAlignment="Stretch" ItemsSource="{Binding ElementName=This, Path=ArtSet2.Items}" ScrollViewer.CanContentScroll="True">
 
                     <ListView.ItemTemplate>
                         <DataTemplate>

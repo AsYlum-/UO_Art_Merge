@@ -36,7 +36,7 @@ namespace UoArtMerge.Ultima
 
         public bool Modified;
 
-        struct CheckSums
+        private struct CheckSums
         {
             public byte[] checksum;
             public int pos;
@@ -50,25 +50,25 @@ namespace UoArtMerge.Ultima
         public Art(string mulPath, string idxPath)
         {
             _fileIndex = new FileIndex(idxPath, mulPath);
-            _cache = new Bitmap[GetIdxLength()];
-            _removed = new bool[GetIdxLength()];
+            _cache = new Bitmap[GetIdxLength() + 0x4000];
+            _removed = new bool[GetIdxLength() + 0x4000];
         }
 
         public bool IsUOAHS()
         {
-            return GetIdxLength() == 0x13FDC;
+            return GetIdxLength() >= 0x13FDC;
         }
 
         public int GetMaxItemID()
         {
+            if (GetIdxLength() >= 0x13FDC)
+            {
+                return 0xFFFF;
+            }
+
             if (GetIdxLength() == 0xC000)
             {
                 return 0x7FFF;
-            }
-
-            if (GetIdxLength() == 0x13FDC)
-            {
-                return 0xFFDB;
             }
 
             return 0x3FFF;
@@ -411,7 +411,7 @@ namespace UoArtMerge.Ultima
 
             ushort* pBuffer = (ushort*)bd.Scan0;
             ushort* pLineEnd = pBuffer + bd.Width;
-            ushort* pEnd = pBuffer + bd.Height * lineDelta;
+            ushort* pEnd = pBuffer + (bd.Height * lineDelta);
 
             bool foundPixel = false;
 
@@ -522,9 +522,8 @@ namespace UoArtMerge.Ultima
 
                             int length = (int)binmul.BaseStream.Position;
                             int x = 22;
-                            int y = 0;
                             int lineWidth = 2;
-                            for (int m = 0; m < 22; ++m, ++y, line += delta, lineWidth += 2)
+                            for (int m = 0; m < 22; ++m, line += delta, lineWidth += 2)
                             {
                                 --x;
                                 ushort* cur = line;
@@ -536,14 +535,15 @@ namespace UoArtMerge.Ultima
 
                             x = 0;
                             lineWidth = 44;
-                            y = 22;
                             line = (ushort*)bd.Scan0;
                             line += delta * 22;
-                            for (int m = 0; m < 22; m++, y++, line += delta, ++x, lineWidth -= 2)
+                            for (int m = 0; m < 22; m++, line += delta, ++x, lineWidth -= 2)
                             {
                                 ushort* cur = line;
                                 for (int n = 0; n < lineWidth; n++)
+                                {
                                     binmul.Write((ushort)(cur[x + n] ^ 0x8000));
+                                }
                             }
 
                             int start = length;
@@ -561,8 +561,7 @@ namespace UoArtMerge.Ultima
                             MemoryStream ms = new MemoryStream();
                             bmp.Save(ms, ImageFormat.Bmp);
                             byte[] checksum = sha.ComputeHash(ms.ToArray());
-                            CheckSums sum;
-                            if (CompareSaveImagesStatic(checksum, out sum))
+                            if (CompareSaveImagesStatic(checksum, out CheckSums sum))
                             {
                                 binidx.Write(sum.pos); //lookup
                                 binidx.Write(sum.length);
