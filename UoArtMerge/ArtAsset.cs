@@ -43,7 +43,7 @@ namespace UOArtMerge
             }
 
             byte[] imageBytes;
-            using (MemoryStream stream = new MemoryStream())
+            using (MemoryStream stream = new())
             {
                 bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
                 imageBytes = stream.ToArray();
@@ -162,7 +162,7 @@ namespace UOArtMerge
         {
             get
             {
-                return _bmpImage ?? (_bmpImage = GetBitmapImage(Bmp));
+                return _bmpImage ??= GetBitmapImage(Bmp);
             }
 
             set
@@ -182,17 +182,12 @@ namespace UOArtMerge
                     return _bmp;
                 }
 
-                switch (_artType)
+                _bmp = _artType switch
                 {
-                    case ArtType.Item when _art != null:
-                        _bmp = _art.GetStatic(_index);
-                        break;
-                    case ArtType.Land when _art != null:
-                        _bmp = _art.GetLand(_index);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                    ArtType.Item when _art != null => _art.GetStatic(_index),
+                    ArtType.Land when _art != null => _art.GetLand(_index),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
 
                 return _bmp;
             }

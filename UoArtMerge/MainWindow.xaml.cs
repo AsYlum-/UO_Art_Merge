@@ -37,7 +37,7 @@ namespace UOArtMerge
             }
 
             byte[] imageBytes;
-            using (MemoryStream stream = new MemoryStream())
+            using (MemoryStream stream = new())
             {
                 bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
                 imageBytes = stream.ToArray();
@@ -189,8 +189,8 @@ namespace UOArtMerge
             ClipBoardItems = new BindingList<ArtAsset>();
             ClipBoardLand = new BindingList<ArtAsset>();
 
-            NotifyPropertyChanged("ClipBoardItems");
-            NotifyPropertyChanged("ClipBoardLand");
+            NotifyPropertyChanged(nameof(ClipBoardItems));
+            NotifyPropertyChanged(nameof(ClipBoardLand));
         }
 
         private void Link_Click(object sender, RoutedEventArgs e)
@@ -211,7 +211,7 @@ namespace UOArtMerge
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            if (!(sender is Button button))
+            if (sender is not Button button)
             {
                 return;
             }
@@ -244,12 +244,12 @@ namespace UOArtMerge
 
         private void Click_Load(object sender, RoutedEventArgs e)
         {
-            if (!(sender is Button button))
+            if (sender is not Button button)
             {
                 return;
             }
 
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            FolderBrowserDialog fbd = new();
             DialogResult result = fbd.ShowDialog();
 
             if (result != System.Windows.Forms.DialogResult.OK)
@@ -264,19 +264,19 @@ namespace UOArtMerge
                 case "1":
                     ArtSet1 = new ArtSet(path);
                     ArtSet1.Load();
-                    NotifyPropertyChanged("ArtSet1");
+                    NotifyPropertyChanged(nameof(ArtSet1));
                     break;
                 case "2":
                     ArtSet2 = new ArtSet(path);
                     ArtSet2.Load();
-                    NotifyPropertyChanged("ArtSet2");
+                    NotifyPropertyChanged(nameof(ArtSet2));
                     break;
             }
         }
 
         private void Click_Save(object sender, RoutedEventArgs e)
         {
-            if (!(sender is Button button))
+            if (sender is not Button button)
             {
                 return;
             }
@@ -285,7 +285,7 @@ namespace UOArtMerge
             {
                 case "1":
                 {
-                    SaveDialog dialog = new SaveDialog(1, this);
+                    SaveDialog dialog = new(1, this);
                     dialog.ShowDialog();
                     break;
                 }
@@ -359,7 +359,7 @@ namespace UOArtMerge
 
         private void CopyFromClipboard_Click(object sender, RoutedEventArgs e)
         {
-            if (!(sender is Button button))
+            if (sender is not Button button)
             {
                 return;
             }
@@ -392,7 +392,7 @@ namespace UOArtMerge
 
         private void CopyToClipboard_Click(object sender, RoutedEventArgs e)
         {
-            if (!(sender is Button button))
+            if (sender is not Button button)
             {
                 return;
             }
@@ -422,7 +422,7 @@ namespace UOArtMerge
 
             foreach (ArtAsset asset in selectedItems)
             {
-                if (!(asset.Clone() is ArtAsset newAsset))
+                if (asset.Clone() is not ArtAsset newAsset)
                 {
                     continue;
                 }
@@ -463,7 +463,7 @@ namespace UOArtMerge
                 return;
             }
 
-            if (!(destinationSelection[0] is ArtAsset destAsset))
+            if (destinationSelection[0] is not ArtAsset destAsset)
             {
                 return;
             }
@@ -482,7 +482,7 @@ namespace UOArtMerge
                     continue;
                 }
 
-                if (!(asset.Clone() is ArtAsset clone))
+                if (asset.Clone() is not ArtAsset clone)
                 {
                     continue;
                 }

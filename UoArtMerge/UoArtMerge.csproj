@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<ProductVersion>8.0.30703</ProductVersion>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net5-windows</TargetFramework>
+		<TargetFramework>net5.0-windows</TargetFramework>
 		<AssemblyTitle>UoArtMerge</AssemblyTitle>
 		<Product>UoArtMerge</Product>
 		<Copyright>Copyright ©  2014</Copyright>
@@ -10,6 +10,7 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<UseWPF>true</UseWPF>
+		<NeutralLanguage>en</NeutralLanguage>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
 		<OutputPath>bin\$(Configuration)\</OutputPath>

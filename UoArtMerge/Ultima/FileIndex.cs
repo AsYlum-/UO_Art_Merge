@@ -141,18 +141,16 @@ namespace UoArtMerge.Ultima
             {
                 _mulPath = mulFileIncludingPath;
 
-                using (FileStream index = new FileStream(idxFileIncludingPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    Stream = new FileStream(_mulPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    int count = (int)(index.Length / 12);
-                    IdxLength = index.Length;
-                    Index = new Entry3D[count];
-                    GCHandle gc = GCHandle.Alloc(Index, GCHandleType.Pinned);
-                    byte[] buffer = new byte[index.Length];
-                    index.Read(buffer, 0, (int)index.Length);
-                    Marshal.Copy(buffer, 0, gc.AddrOfPinnedObject(), (int)index.Length);
-                    gc.Free();
-                }
+                using FileStream index = new(idxFileIncludingPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                Stream = new FileStream(_mulPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                int count = (int)(index.Length / 12);
+                IdxLength = index.Length;
+                Index = new Entry3D[count];
+                GCHandle gc = GCHandle.Alloc(Index, GCHandleType.Pinned);
+                byte[] buffer = new byte[index.Length];
+                index.Read(buffer, 0, (int)index.Length);
+                Marshal.Copy(buffer, 0, gc.AddrOfPinnedObject(), (int)index.Length);
+                gc.Free();
             }
             else
             {

@@ -28,7 +28,7 @@ namespace UOArtMerge
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var handle = new WindowInteropHelper(this).Handle;
-            SetWindowLong(handle, _gwlStyle, GetWindowLong(handle, _gwlStyle) & ~_wsSysMenu);
+            _ = SetWindowLong(handle, _gwlStyle, GetWindowLong(handle, _gwlStyle) & ~_wsSysMenu);
 
             Task.Factory.StartNew(() =>
             {

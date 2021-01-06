@@ -30,7 +30,7 @@ namespace UoArtMerge.Converters
             Visibility rv = Visibility.Visible;
             try
             {
-                var x = value != null && bool.Parse(value.ToString());
+                var x = value != null && bool.Parse(value.ToString() ?? string.Empty);
 
                 rv = x ? Visibility.Visible : Visibility.Collapsed;
             }
