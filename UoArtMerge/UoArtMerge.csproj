@@ -1,12 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<ProductVersion>8.0.30703</ProductVersion>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net48</TargetFramework>
+		<TargetFramework>net5-windows</TargetFramework>
 		<AssemblyTitle>UoArtMerge</AssemblyTitle>
 		<Product>UoArtMerge</Product>
 		<Copyright>Copyright ©  2014</Copyright>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<UseWindowsForms>true</UseWindowsForms>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<UseWPF>true</UseWPF>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
@@ -17,10 +19,6 @@
 		<OutputPath>bin\$(Configuration)\</OutputPath>
 		<DebugType>pdbonly</DebugType>
 	</PropertyGroup>
-	<ItemGroup>
-		<Reference Include="System.Windows.Forms" />
-		<Reference Include="WindowsBase" />
-	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="swamp.ico" />
 	</ItemGroup>
