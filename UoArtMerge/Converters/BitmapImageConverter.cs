@@ -1,4 +1,4 @@
-﻿/* 
+﻿/*
 * Copyright (C) 2013 Ian Karlinsey
 * 
 * 
@@ -17,45 +17,30 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Data;
+using System.Windows.Media.Imaging;
+using UOArtMerge;
 
-namespace UOArtMerge
+namespace UoArtMerge.Converters
 {
-    public class VisibilityConverter : IValueConverter
+    public class BitmapImageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Visibility rv = Visibility.Visible;
-            try
+            BitmapImage img = null;
+            if (value is ArtAsset asset)
             {
-                var x = bool.Parse(value.ToString());
-                if (x)
-                {
-                    rv = Visibility.Visible;
-                }
-                else
-                {
-                    rv = Visibility.Collapsed;
-                }
+                img = asset.BmpImage;
             }
-            catch (Exception)
-            {
-            }
-            return rv;
+
+            return img;
         }
 
-        public object ConvertBack(object value, Type targetType,
-            object parameter, CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            // Do the conversion from visibility to bool
             return null;
         }
     }
 }
-

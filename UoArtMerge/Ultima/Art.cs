@@ -17,16 +17,13 @@
 * along with UltimaLive.  If not, see <http://www.gnu.org/licenses/>. 
 */
 
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Security.Cryptography;
 
-namespace Ultima
+namespace UoArtMerge.Ultima
 {
     public class Art
     {

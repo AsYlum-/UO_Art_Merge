@@ -1,16 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
 using System.Windows.Threading;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,29 +16,29 @@ namespace UOArtMerge
     /// </summary>
     public partial class SaveDialog : Window
     {
-        private int m_set;
-        private MainWindow m_window;
-        private bool canClose = false;
+        private readonly int _set;
+        private readonly MainWindow _window;
+        private bool _canClose;
 
         public SaveDialog(int set, MainWindow window)
         {
-            m_set = set;
-            m_window = window;
+            _set = set;
+            _window = window;
             InitializeComponent();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var hwnd = new WindowInteropHelper(this).Handle;
-            SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
+            var handle = new WindowInteropHelper(this).Handle;
+            SetWindowLong(handle, GWL_STYLE, GetWindowLong(handle, GWL_STYLE) & ~WS_SYSMENU);
 
             Task.Factory.StartNew(() =>
             {
-                m_window.Save(m_set);
+                _window.Save(_set);
                 Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(() =>
                 {
-                    canClose = true;
-                    this.Close();
+                    _canClose = true;
+                    Close();
                 }));
             });
         }
@@ -65,7 +54,7 @@ namespace UOArtMerge
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
-            if (!canClose)
+            if (!_canClose)
             {
                 e.Cancel = true;
             }

@@ -2,48 +2,32 @@
 using System.ComponentModel;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using System.Threading;
-using Microsoft.Win32;
-using Ultima;
+using Button = System.Windows.Controls.Button;
 
 namespace UOArtMerge
 {
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : INotifyPropertyChanged
     {
-        #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
 
         // This method is called by the Set accessor of each property. 
         // The CallerMemberName attribute that is applied to the optional propertyName 
         // parameter causes the property name of the caller to be substituted as an argument. 
-        public void NotifyPropertyChanged(String propertyName)
+        public void NotifyPropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        #endregion
 
         public static BitmapImage GetBitmapImage(Bitmap bmp)
         {
@@ -52,7 +36,7 @@ namespace UOArtMerge
                 return null;
             }
 
-            byte[] imageBytes = null;
+            byte[] imageBytes;
             using (MemoryStream stream = new MemoryStream())
             {
                 bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
@@ -67,134 +51,161 @@ namespace UOArtMerge
         }
 
         public ArtSet ArtSet1 { get; set; }
-        public ArtSet ArtSet2 { get; set; }
-        public BindingList<ArtAsset> ClipBoardItems { get; set; }
-        public BindingList<ArtAsset> ClipBoardLand { get; set; }
-        private bool m_linked = true;
 
-        private bool m_displayItemData = true;
+        public ArtSet ArtSet2 { get; set; }
+
+        public BindingList<ArtAsset> ClipBoardItems { get; set; }
+
+        public BindingList<ArtAsset> ClipBoardLand { get; set; }
+
+        private bool _linked = true;
+
+        private bool _displayItemData = true;
+
         public bool DisplayItemData
         {
             get
             {
-                return m_displayItemData;
+                return _displayItemData;
             }
 
             set
             {
-                m_displayItemData = value;
-                NotifyPropertyChanged("DisplayItemData");
+                _displayItemData = value;
+                NotifyPropertyChanged(nameof(DisplayItemData));
             }
         }
 
-        private bool m_modifyTileData = true;
+        private bool _modifyTileData = true;
         public bool ModifyTileData
         {
             get
             {
-                return m_modifyTileData;
+                return _modifyTileData;
             }
 
             set
             {
-                m_modifyTileData = value;
-                NotifyPropertyChanged("ModifyTileData");
+                _modifyTileData = value;
+                NotifyPropertyChanged(nameof(ModifyTileData));
             }
         }
 
-        #region scrollbar linking
-
         public Visual GetDescendantByType(Visual element, Type type)
         {
-            if (element == null) return null;
-            if (element.GetType() == type) return element;
-            Visual foundElement = null;
-            if (element is FrameworkElement)
+            if (element == null)
             {
-                (element as FrameworkElement).ApplyTemplate();
+                return null;
             }
+
+            if (element.GetType() == type)
+            {
+                return element;
+            }
+
+            Visual foundElement = null;
+            if (element is FrameworkElement frameworkElement)
+            {
+                frameworkElement.ApplyTemplate();
+            }
+
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
             {
                 Visual visual = VisualTreeHelper.GetChild(element, i) as Visual;
                 foundElement = GetDescendantByType(visual, type);
                 if (foundElement != null)
+                {
                     break;
+                }
             }
+
             return foundElement;
         }
 
         private void ArtSet1_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            if (!m_linked)
+            if (!_linked)
             {
                 return;
             }
 
-            ScrollViewer _listboxScrollViewer1 = GetDescendantByType(ArtList1, typeof(ScrollViewer)) as ScrollViewer;
-            ScrollViewer _listboxScrollViewer2 = GetDescendantByType(ArtList2, typeof(ScrollViewer)) as ScrollViewer;
-            _listboxScrollViewer2.ScrollToVerticalOffset(_listboxScrollViewer1.VerticalOffset);
+            ScrollViewer listboxScrollViewer1 = GetDescendantByType(ArtList1, typeof(ScrollViewer)) as ScrollViewer;
+            ScrollViewer listboxScrollViewer2 = GetDescendantByType(ArtList2, typeof(ScrollViewer)) as ScrollViewer;
+
+            if (listboxScrollViewer1 != null)
+            {
+                listboxScrollViewer2?.ScrollToVerticalOffset(listboxScrollViewer1.VerticalOffset);
+            }
         }
 
         private void ArtSet2_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            if (!m_linked)
+            if (!_linked)
             {
                 return;
             }
 
-            ScrollViewer _listboxScrollViewer1 = GetDescendantByType(ArtList1, typeof(ScrollViewer)) as ScrollViewer;
-            ScrollViewer _listboxScrollViewer2 = GetDescendantByType(ArtList2, typeof(ScrollViewer)) as ScrollViewer;
-            _listboxScrollViewer1.ScrollToVerticalOffset(_listboxScrollViewer2.VerticalOffset);
+            ScrollViewer listboxScrollViewer1 = GetDescendantByType(ArtList1, typeof(ScrollViewer)) as ScrollViewer;
+
+            if (GetDescendantByType(ArtList2, typeof(ScrollViewer)) is ScrollViewer listboxScrollViewer2)
+            {
+                listboxScrollViewer1?.ScrollToVerticalOffset(listboxScrollViewer2.VerticalOffset);
+            }
         }
 
         private void LandSet1_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            if (!m_linked)
+            if (!_linked)
             {
                 return;
             }
 
-            ScrollViewer _listboxScrollViewer1 = GetDescendantByType(LandList1, typeof(ScrollViewer)) as ScrollViewer;
-            ScrollViewer _listboxScrollViewer2 = GetDescendantByType(LandList2, typeof(ScrollViewer)) as ScrollViewer;
-            _listboxScrollViewer2.ScrollToVerticalOffset(_listboxScrollViewer1.VerticalOffset);
+            ScrollViewer listboxScrollViewer1 = GetDescendantByType(LandList1, typeof(ScrollViewer)) as ScrollViewer;
+            ScrollViewer listboxScrollViewer2 = GetDescendantByType(LandList2, typeof(ScrollViewer)) as ScrollViewer;
+
+            if (listboxScrollViewer1 != null)
+            {
+                listboxScrollViewer2?.ScrollToVerticalOffset(listboxScrollViewer1.VerticalOffset);
+            }
         }
 
         private void LandSet2_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            if (!m_linked)
+            if (!_linked)
             {
                 return;
             }
 
-            ScrollViewer _listboxScrollViewer1 = GetDescendantByType(LandList1, typeof(ScrollViewer)) as ScrollViewer;
-            ScrollViewer _listboxScrollViewer2 = GetDescendantByType(LandList2, typeof(ScrollViewer)) as ScrollViewer;
-            _listboxScrollViewer1.ScrollToVerticalOffset(_listboxScrollViewer2.VerticalOffset);
+            ScrollViewer listboxScrollViewer1 = GetDescendantByType(LandList1, typeof(ScrollViewer)) as ScrollViewer;
+
+            if (GetDescendantByType(LandList2, typeof(ScrollViewer)) is ScrollViewer listboxScrollViewer2)
+            {
+                listboxScrollViewer1?.ScrollToVerticalOffset(listboxScrollViewer2.VerticalOffset);
+            }
         }
-
-
-
-        #endregion
 
         public MainWindow()
         {
             InitializeComponent();
+
             ClipBoardItems = new BindingList<ArtAsset>();
             ClipBoardLand = new BindingList<ArtAsset>();
+
             NotifyPropertyChanged("ClipBoardItems");
             NotifyPropertyChanged("ClipBoardLand");
         }
 
         private void Link_Click(object sender, RoutedEventArgs e)
         {
-            m_linked = !m_linked;
+            _linked = !_linked;
 
-            if (m_linked)
+            if (_linked)
             {
-                LinkedButtonpath.Style = Resources["LinkedIcon"] as System.Windows.Style;
+                LinkedButtonpath.Style = Resources["LinkedIcon"] as Style;
             }
             else
             {
-                LinkedButtonpath.Style = Resources["UnlinkedIcon"] as System.Windows.Style;
+                LinkedButtonpath.Style = Resources["UnlinkedIcon"] as Style;
             }
 
             NotifyPropertyChanged("LinkedButtonText");
@@ -202,40 +213,40 @@ namespace UOArtMerge
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
-            if (button == null)
+            if (!(sender is Button button))
             {
                 return;
             }
 
-            if (m_displayItemData)
+            if (_displayItemData)
             {
-                if (button.CommandParameter.ToString() == "1")
+                switch (button.CommandParameter.ToString())
                 {
-                    DeleteSelectedItemsFromList(ArtList1.SelectedItems, ArtSet1.Items);
-                }
-                else if (button.CommandParameter.ToString() == "2")
-                {
-                    DeleteSelectedItemsFromList(ArtList2.SelectedItems, ArtSet2.Items);
+                    case "1":
+                        DeleteSelectedItemsFromList(ArtList1.SelectedItems, ArtSet1.Items);
+                        break;
+                    case "2":
+                        DeleteSelectedItemsFromList(ArtList2.SelectedItems, ArtSet2.Items);
+                        break;
                 }
             }
             else
             {
-                if (button.CommandParameter.ToString() == "1")
+                switch (button.CommandParameter.ToString())
                 {
-                    DeleteSelectedItemsFromList(LandList1.SelectedItems, ArtSet1.Land);
-                }
-                else if (button.CommandParameter.ToString() == "2")
-                {
-                    DeleteSelectedItemsFromList(LandList2.SelectedItems, ArtSet2.Land);
+                    case "1":
+                        DeleteSelectedItemsFromList(LandList1.SelectedItems, ArtSet1.Land);
+                        break;
+                    case "2":
+                        DeleteSelectedItemsFromList(LandList2.SelectedItems, ArtSet2.Land);
+                        break;
                 }
             }
         }
 
         private void Click_Load(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
-            if (button == null)
+            if (!(sender is Button button))
             {
                 return;
             }
@@ -243,59 +254,65 @@ namespace UOArtMerge
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             DialogResult result = fbd.ShowDialog();
 
-            if (result == System.Windows.Forms.DialogResult.OK)
+            if (result != System.Windows.Forms.DialogResult.OK)
             {
-                string path = fbd.SelectedPath;
+                return;
+            }
 
-                if (button.CommandParameter.ToString() == "1")
-                {
+            string path = fbd.SelectedPath;
+
+            switch (button.CommandParameter.ToString())
+            {
+                case "1":
                     ArtSet1 = new ArtSet(path);
                     ArtSet1.Load();
                     NotifyPropertyChanged("ArtSet1");
-                }
-                else if (button.CommandParameter.ToString() == "2")
-                {
+                    break;
+                case "2":
                     ArtSet2 = new ArtSet(path);
                     ArtSet2.Load();
                     NotifyPropertyChanged("ArtSet2");
-                }
+                    break;
             }
         }
 
         private void Click_Save(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
-            if (button == null)
+            if (!(sender is Button button))
             {
                 return;
             }
 
-            if (button.CommandParameter.ToString() == "1")
+            switch (button.CommandParameter.ToString())
             {
-                SaveDialog dialog = new SaveDialog(1, this);
-                dialog.ShowDialog();
-            }
-            else if (button.CommandParameter.ToString() == "2")
-            {
-                ArtSet2.Save();
+                case "1":
+                {
+                    SaveDialog dialog = new SaveDialog(1, this);
+                    dialog.ShowDialog();
+                    break;
+                }
+                case "2":
+                    ArtSet2.Save();
+                    break;
             }
         }
 
         public void Save(int set)
         {
-            if (set == 1)
+            switch (set)
             {
-                ArtSet1.Save();
-            }
-            else if (set == 2)
-            {
-                ArtSet2.Save();
+                case 1:
+                    ArtSet1.Save();
+                    break;
+                case 2:
+                    ArtSet2.Save();
+                    break;
             }
         }
 
         private void ClearClipboard_Click(object sender, RoutedEventArgs e)
         {
-            if (m_displayItemData)
+            if (_displayItemData)
             {
                 ClipBoardItems.Clear();
             }
@@ -307,7 +324,7 @@ namespace UOArtMerge
 
         private void DeleteItemsFromClipboard_Click(object sender, RoutedEventArgs e)
         {
-            if (m_displayItemData)
+            if (_displayItemData)
             {
                 RemoveSelectedItemsFromList(ClipboardItemList.SelectedItems, ClipBoardItems);
             }
@@ -317,31 +334,17 @@ namespace UOArtMerge
             }
         }
 
-        private void RemoveSelectedItemsFromList(IList selectedItems, BindingList<ArtAsset> list)
+        private static void RemoveSelectedItemsFromList(IEnumerable selectedItems, ICollection<ArtAsset> list)
         {
-            List<ArtAsset> removables = new List<ArtAsset>();
-
-            foreach (ArtAsset asset in selectedItems)
-            {
-                removables.Add(asset);
-            }
-
-            foreach (ArtAsset asset in removables)
+            foreach (ArtAsset asset in selectedItems.Cast<ArtAsset>().ToList())
             {
                 list.Remove(asset);
             }
         }
 
-        private void DeleteSelectedItemsFromList(IList selectedItems, BindingList<ArtAsset> list)
+        private void DeleteSelectedItemsFromList(IEnumerable selectedItems, IList<ArtAsset> list)
         {
-            List<ArtAsset> removables = new List<ArtAsset>();
-
-            foreach (ArtAsset asset in selectedItems)
-            {
-                removables.Add(asset);
-            }
-
-            foreach (ArtAsset asset in removables)
+            foreach (ArtAsset asset in selectedItems.Cast<ArtAsset>().ToList())
             {
                 asset.DeleteArt();
                 if (ModifyTileData)
@@ -350,6 +353,7 @@ namespace UOArtMerge
                 }
                 asset.Bmp = null;
                 asset.BmpImage = null;
+
                 list.Remove(asset);
                 list.Insert(asset.Index, asset);
             }
@@ -357,102 +361,94 @@ namespace UOArtMerge
 
         private void CopyFromClipboard_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
-            if (button == null)
+            if (!(sender is Button button))
             {
                 return;
             }
 
-            if (m_displayItemData)
+            if (_displayItemData)
             {
-                if (button.CommandParameter.ToString() == "1" && ArtSet1 != null)
+                switch (button.CommandParameter.ToString())
                 {
-                    MoveSelectedItems(ClipboardItemList.SelectedItems, ArtSet1, ArtList1.SelectedItems);
-                }
-                else if (button.CommandParameter.ToString() == "2" && ArtSet2 != null)
-                {
-                    MoveSelectedItems(ClipboardItemList.SelectedItems, ArtSet2, ArtList2.SelectedItems);
+                    case "1" when ArtSet1 != null:
+                        MoveSelectedItems(ClipboardItemList.SelectedItems, ArtSet1, ArtList1.SelectedItems);
+                        break;
+                    case "2" when ArtSet2 != null:
+                        MoveSelectedItems(ClipboardItemList.SelectedItems, ArtSet2, ArtList2.SelectedItems);
+                        break;
                 }
             }
             else
             {
-                if (button.CommandParameter.ToString() == "1" && ArtSet1 != null)
+                switch (button.CommandParameter.ToString())
                 {
-                    MoveSelectedItems(ClipboardLandList.SelectedItems, ArtSet1, LandList1.SelectedItems);
-                }
-                else if (button.CommandParameter.ToString() == "2" && ArtSet2 != null)
-                {
-                    MoveSelectedItems(ClipboardLandList.SelectedItems, ArtSet2, LandList2.SelectedItems);
+                    case "1" when ArtSet1 != null:
+                        MoveSelectedItems(ClipboardLandList.SelectedItems, ArtSet1, LandList1.SelectedItems);
+                        break;
+                    case "2" when ArtSet2 != null:
+                        MoveSelectedItems(ClipboardLandList.SelectedItems, ArtSet2, LandList2.SelectedItems);
+                        break;
                 }
             }
         }
 
         private void CopyToClipboard_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
-            if (button == null)
+            if (!(sender is Button button))
             {
                 return;
             }
 
-            IList selectedItems = null;
-            BindingList<ArtAsset> targetList = null;
+            IList selectedItems;
+            BindingList<ArtAsset> targetList;
 
-            if (m_displayItemData)
+            if (_displayItemData)
             {
                 targetList = ClipBoardItems;
-                if (button.CommandParameter.ToString() == "1")
-                {
-                    selectedItems = ArtList1.SelectedItems;
-                }
-                else
-                {
-                    selectedItems = ArtList2.SelectedItems;
-                }
+                selectedItems = button.CommandParameter.ToString() == "1"
+                    ? ArtList1.SelectedItems
+                    : ArtList2.SelectedItems;
             }
             else
             {
                 targetList = ClipBoardLand;
-                if (button.CommandParameter.ToString() == "1")
-                {
-                    selectedItems = LandList1.SelectedItems;
-                }
-                else
-                {
-                    selectedItems = LandList2.SelectedItems;
-                }
+                selectedItems = button.CommandParameter.ToString() == "1"
+                    ? LandList1.SelectedItems
+                    : LandList2.SelectedItems;
             }
 
-            if (selectedItems != null && selectedItems.Count > 0)
+            if (selectedItems.Count <= 0)
             {
-                foreach (ArtAsset asset in selectedItems)
+                return;
+            }
+
+            foreach (ArtAsset asset in selectedItems)
+            {
+                if (!(asset.Clone() is ArtAsset newAsset))
                 {
-                    ArtAsset newAsset = asset.Clone() as ArtAsset;
-                    if (newAsset != null)
-                    {
-                        if (ModifyTileData)
-                        {
-                            newAsset.ItemDatum = asset.ItemDatum;
-                            newAsset.LandDatum = asset.LandDatum;
-                        }
-                        newAsset.Index = -1;
-                        newAsset.ArtInstance = null;
-                        newAsset.TileDataInstance = null;
-                        targetList.Add(newAsset);
-                    }
+                    continue;
                 }
+
+                if (ModifyTileData)
+                {
+                    newAsset.ItemDatum = asset.ItemDatum;
+                    newAsset.LandDatum = asset.LandDatum;
+                }
+                newAsset.Index = -1;
+                newAsset.ArtInstance = null;
+                newAsset.TileDataInstance = null;
+                targetList.Add(newAsset);
             }
         }
 
         private void MoveRight_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
-            if (button == null)
+            if (!(sender is Button))
             {
                 return;
             }
 
-            if (m_displayItemData)
+            if (_displayItemData)
             {
                 MoveSelectedItems(ArtList1.SelectedItems, ArtSet2, ArtList2.SelectedItems);
             }
@@ -462,16 +458,14 @@ namespace UOArtMerge
             }
         }
 
-        private void MoveSelectedItems(IList sourceSelection, ArtSet destination, IList destinationSelection)
+        private void MoveSelectedItems(IEnumerable sourceSelection, ArtSet destination, IList destinationSelection)
         {
             if (sourceSelection == null || destination == null || destinationSelection == null || destinationSelection.Count < 1)
             {
                 return;
             }
 
-            ArtAsset destAsset = destinationSelection[0] as ArtAsset;
-
-            if (destAsset == null)
+            if (!(destinationSelection[0] is ArtAsset destAsset))
             {
                 return;
             }
@@ -485,69 +479,61 @@ namespace UOArtMerge
 
             foreach (ArtAsset asset in sourceSelection)
             {
-                if (idx < destination.Items.Count)
+                if (idx >= destination.Items.Count)
                 {
-                    ArtAsset clone = asset.Clone() as ArtAsset;
-                    if (clone != null)
+                    continue;
+                }
+
+                if (!(asset.Clone() is ArtAsset clone))
+                {
+                    continue;
+                }
+
+                clone.Index = idx;
+                clone.ArtInstance = destination.ArtInstance;
+                clone.TileDataInstance = destination.TileDataInstance;
+
+                if (ModifyTileData)
+                {
+                    clone.ItemDatum = asset.ItemDatum;
+                    clone.LandDatum = asset.LandDatum;
+                }
+                else
+                {
+                    ArtAsset existingDestinationAsset = _displayItemData
+                        ? destination.Items[idx]
+                        : destination.Land[idx];
+
+                    if (existingDestinationAsset != null)
                     {
-                        clone.Index = idx;
-                        clone.ArtInstance = destination.ArtInstance;
-                        clone.TileDataInstance = destination.TileDataInstance;
-
-                        if (ModifyTileData)
-                        {
-                            clone.ItemDatum = asset.ItemDatum;
-                            clone.LandDatum = asset.LandDatum;
-                        }
-                        else
-                        {
-
-
-
-                            ArtAsset existingDestinationAsset = null;
-
-                            if (m_displayItemData)
-                            {
-                                existingDestinationAsset = destination.Items[idx];
-                            }
-                            else
-                            {
-                                existingDestinationAsset = destination.Land[idx];
-                            }
-
-                            if (existingDestinationAsset != null)
-                            {
-                                clone.ItemDatum = existingDestinationAsset.ItemDatum;
-                                clone.LandDatum = existingDestinationAsset.LandDatum;
-                            }
-                        }
-
-                        if (m_displayItemData)
-                        {
-                            destination.Items.RemoveAt(idx);
-                            destination.Items.Insert(idx, clone);
-                        }
-                        else
-                        {
-                            destination.Land.RemoveAt(idx);
-                            destination.Land.Insert(idx, clone);
-                        }
-                        clone.Save();
-                        idx++;
+                        clone.ItemDatum = existingDestinationAsset.ItemDatum;
+                        clone.LandDatum = existingDestinationAsset.LandDatum;
                     }
                 }
+
+                if (_displayItemData)
+                {
+                    destination.Items.RemoveAt(idx);
+                    destination.Items.Insert(idx, clone);
+                }
+                else
+                {
+                    destination.Land.RemoveAt(idx);
+                    destination.Land.Insert(idx, clone);
+                }
+                clone.Save();
+                idx++;
             }
         }
 
         private void MoveLeft_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.Button button = sender as System.Windows.Controls.Button;
-            if (button == null)
+            if (!(sender is Button))
             {
                 return;
             }
 
-            if (m_displayItemData)
+            if (_displayItemData)
             {
                 MoveSelectedItems(ArtList2.SelectedItems, ArtSet1, ArtList1.SelectedItems);
             }

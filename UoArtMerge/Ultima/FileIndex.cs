@@ -17,19 +17,18 @@
 * along with UltimaLive.  If not, see <http://www.gnu.org/licenses/>. 
 */
 
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Ultima
+namespace UoArtMerge.Ultima
 {
     public sealed class FileIndex
     {
-        public Entry3D[] Index { get; private set; }
+        public Entry3D[] Index { get; }
         public Stream Stream { get; private set; }
-        public long IdxLength { get; private set; }
-        private string MulPath;
+        public long IdxLength { get; }
+
+        private readonly string _mulPath;
 
         public Stream Seek(int index, out int length, out int extra)
         {
@@ -50,19 +49,15 @@ namespace Ultima
             length = e.length & 0x7FFFFFFF;
             extra = e.extra;
 
-
             if (e.length < 0)
             {
                 length = extra = 0;
                 return null;
             }
 
-            if ((Stream == null) || (!Stream.CanRead) || (!Stream.CanSeek))
+            if ((Stream?.CanRead != true) || !Stream.CanSeek)
             {
-                if (MulPath == null)
-                    Stream = null;
-                else
-                    Stream = new FileStream(MulPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                Stream = _mulPath == null ? null : new FileStream(_mulPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             }
 
             if (Stream == null)
@@ -70,14 +65,15 @@ namespace Ultima
                 length = extra = 0;
                 return null;
             }
-            else if (Stream.Length < e.lookup)
+
+            if (Stream.Length < e.lookup)
             {
                 length = extra = 0;
                 return null;
             }
 
-
             Stream.Seek(e.lookup, SeekOrigin.Begin);
+
             return Stream;
         }
 
@@ -115,7 +111,7 @@ namespace Ultima
                 return false;
             }
 
-            if ((MulPath == null) || !File.Exists(MulPath))
+            if ((_mulPath == null) || !File.Exists(_mulPath))
             {
                 length = extra = 0;
                 patched = false;
@@ -124,7 +120,7 @@ namespace Ultima
 
             if ((Stream == null) || (!Stream.CanRead) || (!Stream.CanSeek))
             {
-                Stream = new FileStream(MulPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                Stream = new FileStream(_mulPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             }
 
             if (Stream.Length < e.lookup)
@@ -143,11 +139,11 @@ namespace Ultima
         {
             if ((idxFileIncludingPath != null) && (mulFileIncludingPath != null))
             {
-                MulPath = mulFileIncludingPath;
+                _mulPath = mulFileIncludingPath;
 
                 using (FileStream index = new FileStream(idxFileIncludingPath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    Stream = new FileStream(MulPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    Stream = new FileStream(_mulPath, FileMode.Open, FileAccess.Read, FileShare.Read);
                     int count = (int)(index.Length / 12);
                     IdxLength = index.Length;
                     Index = new Entry3D[count];
@@ -162,12 +158,11 @@ namespace Ultima
             {
                 Stream = null;
                 Index = new Entry3D[1];
-                return;
             }
         }
     }
 
-    [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Entry3D
     {
         public int lookup;

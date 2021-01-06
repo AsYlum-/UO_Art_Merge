@@ -17,13 +17,14 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:merge="clr-namespace:UOArtMerge"
+        xmlns:converters="clr-namespace:UoArtMerge.Converters"
         Title="UO Art Merge" Height="673" Width="993" Name="This" ResizeMode="NoResize"
         Background="AntiqueWhite" 
         >
 
     <Window.Resources>
-        <merge:BitmapImageConverter x:Key="ImageConverter" />
-        <merge:VisibilityConverter x:Key="VisibilityConverter" />
+        <converters:BitmapImageConverter x:Key="ImageConverter" />
+        <converters:VisibilityConverter x:Key="VisibilityConverter" />
 
         <Style x:Key="Clipboard1Icon" TargetType="{x:Type Path}">
             <Setter Property="Data">

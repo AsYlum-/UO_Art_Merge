@@ -16,72 +16,64 @@
 * along with UltimaLive.  If not, see <http://www.gnu.org/licenses/>. 
 */
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace UoArtMerge
 {
     public class BitmapPair : INotifyPropertyChanged
     {
-        #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
-        // Create the OnPropertyChanged method to raise the event 
+
         public void OnPropertyChanged(string name)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(name));
-            }
-        }
-        #endregion
 
-        private int m_index;
+            handler?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private int _index;
+
         public int Index
         {
             get
             {
-                return m_index;
+                return _index;
             }
 
             set
             {
-                m_index = value;
+                _index = value;
                 OnPropertyChanged("Index");
             }
         }
 
-        private BitmapImage m_image1;
+        private BitmapImage _image1;
         public BitmapImage Image1
         {
             get
             {
-                return m_image1;
+                return _image1;
             }
 
             set
             {
-                m_image1 = value;
+                _image1 = value;
                 OnPropertyChanged("Image1");
             }
         }
 
-        private BitmapImage m_image2;
+        private BitmapImage _image2;
         public BitmapImage Image2
         {
             get
             {
-                return m_image2;
+                return _image2;
             }
 
             set
             {
-                m_image2 = value;
+                _image2 = value;
                 OnPropertyChanged("Image2");
             }
         }

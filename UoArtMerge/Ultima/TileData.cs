@@ -22,7 +22,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Ultima
+namespace UoArtMerge.Ultima
 {
     /// <summary>
     /// Represents land tile data.
@@ -107,100 +107,100 @@ namespace Ultima
             m_TexID = (short)m_tileData.ConvertStringToInt(split[i++]);
             m_Unk1 = m_tileData.ConvertStringToInt(split[i++]);
             m_Flags = 0;
-            int temp = System.Convert.ToByte(split[i++]);
+            int temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Background;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Weapon;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Transparent;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Translucent;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Wall;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Damaging;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Impassable;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Wet;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Unknown1;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Surface;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Bridge;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Generic;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Window;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.NoShoot;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.ArticleA;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.ArticleAn;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Internal;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Foliage;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.PartialHue;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Unknown2;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Map;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Container;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Wearable;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.LightSource;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Animation;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.HoverOver;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Unknown3;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Armor;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Roof;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.Door;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.StairBack;
-            temp = System.Convert.ToByte(split[i++]);
+            temp = Convert.ToByte(split[i++]);
             if (temp != 0)
                 m_Flags |= TileFlag.StairRight;
         }
@@ -476,113 +476,113 @@ namespace Ultima
         public void ReadData(string[] split)
         {
             m_Name = split[1];
-            m_Weight = System.Convert.ToByte(split[2]);
-            m_Quality = System.Convert.ToByte(split[3]);
+            m_Weight = Convert.ToByte(split[2]);
+            m_Quality = Convert.ToByte(split[3]);
             m_Animation = (short)m_tileData.ConvertStringToInt(split[4]);
-            m_Height = System.Convert.ToByte(split[5]);
-            m_Hue = System.Convert.ToByte(split[6]);
-            m_Quantity = System.Convert.ToByte(split[7]);
-            m_StackOffset = System.Convert.ToByte(split[8]);
-            m_MiscData = System.Convert.ToInt16(split[9]);
-            m_Unk1 = System.Convert.ToInt32(split[10]);
-            m_Unk2 = System.Convert.ToByte(split[11]);
-            m_Unk3 = System.Convert.ToByte(split[12]);
+            m_Height = Convert.ToByte(split[5]);
+            m_Hue = Convert.ToByte(split[6]);
+            m_Quantity = Convert.ToByte(split[7]);
+            m_StackOffset = Convert.ToByte(split[8]);
+            m_MiscData = Convert.ToInt16(split[9]);
+            m_Unk1 = Convert.ToInt32(split[10]);
+            m_Unk2 = Convert.ToByte(split[11]);
+            m_Unk3 = Convert.ToByte(split[12]);
 
             m_Flags = 0;
-            int temp = System.Convert.ToByte(split[13]);
+            int temp = Convert.ToByte(split[13]);
             if (temp != 0)
                 m_Flags |= TileFlag.Background;
-            temp = System.Convert.ToByte(split[14]);
+            temp = Convert.ToByte(split[14]);
             if (temp != 0)
                 m_Flags |= TileFlag.Weapon;
-            temp = System.Convert.ToByte(split[15]);
+            temp = Convert.ToByte(split[15]);
             if (temp != 0)
                 m_Flags |= TileFlag.Transparent;
-            temp = System.Convert.ToByte(split[16]);
+            temp = Convert.ToByte(split[16]);
             if (temp != 0)
                 m_Flags |= TileFlag.Translucent;
-            temp = System.Convert.ToByte(split[17]);
+            temp = Convert.ToByte(split[17]);
             if (temp != 0)
                 m_Flags |= TileFlag.Wall;
-            temp = System.Convert.ToByte(split[18]);
+            temp = Convert.ToByte(split[18]);
             if (temp != 0)
                 m_Flags |= TileFlag.Damaging;
-            temp = System.Convert.ToByte(split[19]);
+            temp = Convert.ToByte(split[19]);
             if (temp != 0)
                 m_Flags |= TileFlag.Impassable;
-            temp = System.Convert.ToByte(split[20]);
+            temp = Convert.ToByte(split[20]);
             if (temp != 0)
                 m_Flags |= TileFlag.Wet;
-            temp = System.Convert.ToByte(split[21]);
+            temp = Convert.ToByte(split[21]);
             if (temp != 0)
                 m_Flags |= TileFlag.Unknown1;
-            temp = System.Convert.ToByte(split[22]);
+            temp = Convert.ToByte(split[22]);
             if (temp != 0)
                 m_Flags |= TileFlag.Surface;
-            temp = System.Convert.ToByte(split[23]);
+            temp = Convert.ToByte(split[23]);
             if (temp != 0)
                 m_Flags |= TileFlag.Bridge;
-            temp = System.Convert.ToByte(split[24]);
+            temp = Convert.ToByte(split[24]);
             if (temp != 0)
                 m_Flags |= TileFlag.Generic;
-            temp = System.Convert.ToByte(split[25]);
+            temp = Convert.ToByte(split[25]);
             if (temp != 0)
                 m_Flags |= TileFlag.Window;
-            temp = System.Convert.ToByte(split[26]);
+            temp = Convert.ToByte(split[26]);
             if (temp != 0)
                 m_Flags |= TileFlag.NoShoot;
-            temp = System.Convert.ToByte(split[27]);
+            temp = Convert.ToByte(split[27]);
             if (temp != 0)
                 m_Flags |= TileFlag.ArticleA;
-            temp = System.Convert.ToByte(split[28]);
+            temp = Convert.ToByte(split[28]);
             if (temp != 0)
                 m_Flags |= TileFlag.ArticleAn;
-            temp = System.Convert.ToByte(split[29]);
+            temp = Convert.ToByte(split[29]);
             if (temp != 0)
                 m_Flags |= TileFlag.Internal;
-            temp = System.Convert.ToByte(split[30]);
+            temp = Convert.ToByte(split[30]);
             if (temp != 0)
                 m_Flags |= TileFlag.Foliage;
-            temp = System.Convert.ToByte(split[31]);
+            temp = Convert.ToByte(split[31]);
             if (temp != 0)
                 m_Flags |= TileFlag.PartialHue;
-            temp = System.Convert.ToByte(split[32]);
+            temp = Convert.ToByte(split[32]);
             if (temp != 0)
                 m_Flags |= TileFlag.Unknown2;
-            temp = System.Convert.ToByte(split[33]);
+            temp = Convert.ToByte(split[33]);
             if (temp != 0)
                 m_Flags |= TileFlag.Map;
-            temp = System.Convert.ToByte(split[34]);
+            temp = Convert.ToByte(split[34]);
             if (temp != 0)
                 m_Flags |= TileFlag.Container;
-            temp = System.Convert.ToByte(split[35]);
+            temp = Convert.ToByte(split[35]);
             if (temp != 0)
                 m_Flags |= TileFlag.Wearable;
-            temp = System.Convert.ToByte(split[36]);
+            temp = Convert.ToByte(split[36]);
             if (temp != 0)
                 m_Flags |= TileFlag.LightSource;
-            temp = System.Convert.ToByte(split[37]);
+            temp = Convert.ToByte(split[37]);
             if (temp != 0)
                 m_Flags |= TileFlag.Animation;
-            temp = System.Convert.ToByte(split[38]);
+            temp = Convert.ToByte(split[38]);
             if (temp != 0)
                 m_Flags |= TileFlag.HoverOver;
-            temp = System.Convert.ToByte(split[39]);
+            temp = Convert.ToByte(split[39]);
             if (temp != 0)
                 m_Flags |= TileFlag.Unknown3;
-            temp = System.Convert.ToByte(split[40]);
+            temp = Convert.ToByte(split[40]);
             if (temp != 0)
                 m_Flags |= TileFlag.Armor;
-            temp = System.Convert.ToByte(split[41]);
+            temp = Convert.ToByte(split[41]);
             if (temp != 0)
                 m_Flags |= TileFlag.Roof;
-            temp = System.Convert.ToByte(split[42]);
+            temp = Convert.ToByte(split[42]);
             if (temp != 0)
                 m_Flags |= TileFlag.Door;
-            temp = System.Convert.ToByte(split[43]);
+            temp = Convert.ToByte(split[43]);
             if (temp != 0)
                 m_Flags |= TileFlag.StairBack;
-            temp = System.Convert.ToByte(split[44]);
+            temp = Convert.ToByte(split[44]);
             if (temp != 0)
                 m_Flags |= TileFlag.StairRight;
         }
@@ -765,25 +765,27 @@ namespace Ultima
             get { return m_HeightTable; }
         }
 
-        private byte[] m_StringBuffer = new byte[20];
+        private byte[] _stringBuffer = new byte[20];
         private string ReadNameString(BinaryReader bin)
         {
-            bin.Read(m_StringBuffer, 0, 20);
+            bin.Read(_stringBuffer, 0, 20);
 
             int count;
 
-            for (count = 0; count < 20 && m_StringBuffer[count] != 0; ++count) ;
+            for (count = 0; count < 20 && _stringBuffer[count] != 0; ++count)
+            {
+            }
 
-            return Encoding.Default.GetString(m_StringBuffer, 0, count);
+            return Encoding.Default.GetString(_stringBuffer, 0, count);
         }
 
         public unsafe string ReadNameString(byte* buffer)
         {
             int count;
             for (count = 0; count < 20 && *buffer != 0; ++count)
-                m_StringBuffer[count] = *buffer++;
+                _stringBuffer[count] = *buffer++;
 
-            return Encoding.Default.GetString(m_StringBuffer, 0, count);
+            return Encoding.Default.GetString(_stringBuffer, 0, count);
         }
 
         public TileData(Art art)
@@ -952,7 +954,7 @@ namespace Ultima
         /// <param name="FileName"></param>
         public void ExportItemDataToCSV(string FileName)
         {
-            using (StreamWriter Tex = new StreamWriter(new FileStream(FileName, FileMode.Create, FileAccess.ReadWrite), System.Text.Encoding.GetEncoding(1252)))
+            using (StreamWriter Tex = new StreamWriter(new FileStream(FileName, FileMode.Create, FileAccess.ReadWrite), Encoding.GetEncoding(1252)))
             {
                 Tex.Write("ID;Name;Weight/Quantity;Layer/Quality;Gump/AnimID;Height;Hue;Class/Quantity;StackingOffset;MiscData;Unknown1;Unknown2;Unknown3");
                 Tex.Write(";Background;Weapon;Transparent;Translucent;Wall;Damage;Impassible;Wet;Unknow1");
@@ -963,11 +965,11 @@ namespace Ultima
                 for (int i = 0; i < m_ItemData.Length; ++i)
                 {
                     ItemData tile = m_ItemData[i];
-                    Tex.Write(String.Format("0x{0:X4}", i));
-                    Tex.Write(String.Format(";{0}", tile.Name));
+                    Tex.Write(string.Format("0x{0:X4}", i));
+                    Tex.Write(string.Format(";{0}", tile.Name));
                     Tex.Write(";" + tile.Weight);
                     Tex.Write(";" + tile.Quality);
-                    Tex.Write(String.Format(";0x{0:X4}", tile.Animation));
+                    Tex.Write(string.Format(";0x{0:X4}", tile.Animation));
                     Tex.Write(";" + tile.Height);
                     Tex.Write(";" + tile.Hue);
                     Tex.Write(";" + tile.Quantity);
@@ -1030,9 +1032,9 @@ namespace Ultima
                 for (int i = 0; i < m_LandData.Length; ++i)
                 {
                     LandData tile = m_LandData[i];
-                    Tex.Write(String.Format("0x{0:X4}", i));
+                    Tex.Write(string.Format("0x{0:X4}", i));
                     Tex.Write(";" + tile.Name);
-                    Tex.Write(";" + String.Format("0x{0:X4}", tile.TextureID));
+                    Tex.Write(";" + string.Format("0x{0:X4}", tile.TextureID));
                     Tex.Write(";" + tile.Unk1);
 
                     Tex.Write(";" + (((tile.Flags & TileFlag.Background) != 0) ? "1" : "0"));
@@ -1141,7 +1143,7 @@ namespace Ultima
         }
     }
 
-    [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct OldLandTileDataMul
     {
         public int flags;
@@ -1149,7 +1151,7 @@ namespace Ultima
         public fixed byte name[20];
     }
 
-    [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct NewLandTileDataMul
     {
         public int flags;
@@ -1158,7 +1160,7 @@ namespace Ultima
         public fixed byte name[20];
     }
 
-    [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct OldItemTileDataMul
     {
         public int flags;
@@ -1176,7 +1178,7 @@ namespace Ultima
         public fixed byte name[20];
     }
 
-    [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct NewItemTileDataMul
     {
         public int flags;
